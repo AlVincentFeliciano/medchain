@@ -4,63 +4,57 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MedChain</title>
+
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:sans-serif;background:#f5f7fa;color:#1a1a2e;min-height:100vh}
-    header{background:#1a1a2e;color:white;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
-    header h1{font-size:1.1rem;font-weight:700;letter-spacing:.02em}
-    header span{font-size:12px;color:#8892b0;display:block;margin-top:2px}
-    #wallet-btn{background:#00b4d8;color:white;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px}
-    #wallet-btn:hover{background:#0096c7}
-    #wallet-address{font-size:11px;color:#8892b0;margin-top:3px}
-    main{max-width:640px;margin:2rem auto;padding:0 1rem;display:flex;flex-direction:column;gap:1.25rem}
-    .card{background:white;border-radius:16px;padding:1.5rem;border:1px solid #e8eaf0}
-    .card h2{font-size:13px;font-weight:700;color:#8892b0;text-transform:uppercase;letter-spacing:.06em;margin-bottom:1.1rem}
-    .tabs{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap}
-    .tab{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;border:1.5px solid #e8eaf0;background:white;cursor:pointer;color:#8892b0;transition:all .15s}
-    .tab.active{background:#1a1a2e;color:white;border-color:#1a1a2e}
+
+    header{
+      background:#1a1a2e;color:white;
+      padding:1rem 1.5rem;
+      display:flex;justify-content:space-between;align-items:center;
+    }
+
+    #wallet-btn{
+      background:#00b4d8;color:white;
+      border:none;padding:8px 16px;border-radius:8px;
+      cursor:pointer;font-weight:600;
+    }
+
+    main{max-width:700px;margin:2rem auto;padding:0 1rem}
+
+    .card{background:white;padding:1.5rem;border-radius:12px;margin-bottom:1rem}
+    input{
+      width:100%;padding:10px;border:1px solid #ddd;
+      border-radius:8px;margin-top:5px
+    }
+
+    button.primary{
+      width:100%;margin-top:10px;
+      padding:10px;border:none;border-radius:8px;
+      background:#1a1a2e;color:white;font-weight:600;
+      cursor:pointer;
+    }
+
+    .tab{cursor:pointer;padding:8px 12px;border:1px solid #ddd;border-radius:8px}
+    .tab.active{background:#1a1a2e;color:white}
+
     .panel{display:none}
     .panel.active{display:block}
-    label{font-size:13px;color:#555;display:block;margin-bottom:4px;margin-top:12px}
-    label:first-child{margin-top:0}
-    input{width:100%;padding:10px 13px;border:1.5px solid #e8eaf0;border-radius:8px;font-size:14px;outline:none;transition:border .15s}
-    input:focus{border-color:#00b4d8}
-    button.primary{background:#1a1a2e;color:white;border:none;padding:11px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:14px;width:100%;transition:background .15s}
-    button.primary:hover{background:#16213e}
-    button.primary:disabled{background:#aaa;cursor:not-allowed}
-    .msg{font-size:13px;padding:10px 14px;border-radius:8px;margin-top:12px;line-height:1.6}
-    .msg.success{background:#e8f8f0;color:#1a7a4a;border:1px solid #b7dfc7}
-    .msg.error{background:#fff0f0;color:#c0392b;border:1px solid #f5b7b1}
-    .msg.info{background:#e8f4ff;color:#1a5fa8;border:1px solid #b7d4f7}
-    .msg.warn{background:#fffbe8;color:#a07800;border:1px solid #f0d87a}
-    .tx-link{font-size:11px;color:#00b4d8;word-break:break-all;margin-top:6px;display:block}
-    .result-box{border-radius:14px;padding:1.5rem;margin-top:1rem;text-align:center}
-    .result-box.authentic{background:#e8f8f0;border:2px solid #1a7a4a}
-    .result-box.fake{background:#fff0f0;border:2px solid #c0392b}
-    .result-box.recalled{background:#fffbe8;border:2px solid #a07800}
-    .result-icon{font-size:48px;margin-bottom:8px}
-    .result-status{font-size:22px;font-weight:700;margin-bottom:6px}
-    .result-status.authentic{color:#1a7a4a}
-    .result-status.fake{color:#c0392b}
-    .result-status.recalled{color:#a07800}
-    .result-detail{font-size:13px;color:#555;line-height:1.8;margin-top:10px;text-align:left;background:white;border-radius:8px;padding:12px 14px}
-    .result-detail span{display:block}
-    .result-detail strong{color:#1a1a2e}
-    .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .stat{background:#f5f7fa;border-radius:10px;padding:1rem;text-align:center}
-    .stat-num{font-size:28px;font-weight:700;color:#1a1a2e}
-    .stat-label{font-size:12px;color:#8892b0;margin-top:2px}
-    .qr-hint{font-size:12px;color:#8892b0;margin-top:8px;text-align:center}
+
+    .msg{margin-top:10px;font-size:13px}
   </style>
 </head>
+
 <body>
 
 <header>
   <div>
     <h1>💊 MedChain</h1>
-    <span>Fake Medicine Detector — Stellar Testnet</span>
+    <small>Stellar Soroban dApp</small>
   </div>
-  <div style="text-align:right">
+
+  <div>
     <button id="wallet-btn" onclick="connectWallet()">Connect Freighter</button>
     <div id="wallet-address">Not connected</div>
   </div>
@@ -69,281 +63,135 @@
 <main>
 
   <div class="card">
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-num" id="batch-count">—</div>
-        <div class="stat-label">Registered batches</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num" id="network-label">Testnet</div>
-        <div class="stat-label">Network</div>
-      </div>
-    </div>
+    <h3>Register Batch</h3>
+    <input id="batchId" placeholder="Batch ID"/>
+    <input id="name" placeholder="Medicine Name"/>
+    <input id="mfr" placeholder="Manufacturer"/>
+    <input id="exp" type="date"/>
+    <button class="primary" onclick="registerBatch()">Register</button>
+    <div id="register-msg"></div>
   </div>
 
   <div class="card">
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('verify')">Verify Medicine</button>
-      <button class="tab" onclick="switchTab('register')">Register Batch</button>
-      <button class="tab" onclick="switchTab('recall')">Recall Batch</button>
-    </div>
-
-    <!-- VERIFY -->
-    <div class="panel active" id="panel-verify">
-      <label>Batch ID (from QR code or label)</label>
-      <input type="text" id="verify-batch-id" placeholder="e.g. BATCH-2026-001"/>
-      <button class="primary" onclick="verifyBatch()">Verify Authenticity</button>
-      <div id="verify-result"></div>
-      <p class="qr-hint">Scan the QR on the medicine packaging or type the batch ID manually</p>
-    </div>
-
-    <!-- REGISTER -->
-    <div class="panel" id="panel-register">
-      <label>Batch ID</label>
-      <input type="text" id="reg-batch-id" placeholder="e.g. BATCH-2026-001"/>
-      <label>Medicine name</label>
-      <input type="text" id="reg-medicine-name" placeholder="e.g. Amoxicillin 500mg"/>
-      <label>Manufacturer</label>
-      <input type="text" id="reg-manufacturer" placeholder="e.g. PharmaCorp PH"/>
-      <label>Manufacture date</label>
-      <input type="date" id="reg-manufacture-date"/>
-      <label>Expiry date</label>
-      <input type="date" id="reg-expiry-date"/>
-      <button class="primary" onclick="registerBatch()">Register on Blockchain</button>
-      <div id="register-msg"></div>
-    </div>
-
-    <!-- RECALL -->
-    <div class="panel" id="panel-recall">
-      <label>Batch ID to recall</label>
-      <input type="text" id="recall-batch-id" placeholder="e.g. BATCH-2026-001"/>
-      <button class="primary" onclick="recallBatch()" style="background:#c0392b">Issue Recall</button>
-      <div id="recall-msg"></div>
-    </div>
-
+    <h3>Verify Batch</h3>
+    <input id="verifyId" placeholder="Batch ID"/>
+    <button class="primary" onclick="verifyBatch()">Verify</button>
+    <div id="verify-msg"></div>
   </div>
 
 </main>
 
 <script type="module">
-  const CONTRACT_ID = "CDPLCHQWKFAKQGQNWRNXIPEXONA6EBMJSWS3TRILXHZ6IS5BNLO2M5HJ"; // ← paste here after deploying
-  const RPC_URL    = "https://soroban-testnet.stellar.org";
-
 import * as StellarSdk from "https://esm.sh/@stellar/stellar-sdk@13.0.0";
 import freighter from "https://esm.sh/@stellar/freighter-api@2.0.0";
 
-  window.userAddress = null;
-  const rpc      = new StellarSdk.SorobanRpc.Server(RPC_URL);
-  const contract = new StellarSdk.Contract(CONTRACT_ID);
+const CONTRACT_ID = "CDPLCHQWKFAKQGQNWRNXIPEXONA6EBMJSWS3TRILXHZ6IS5BNLO2M5HJ";
+const rpc = new StellarSdk.SorobanRpc.Server("https://soroban-testnet.stellar.org");
+const contract = new StellarSdk.Contract(CONTRACT_ID);
 
-  // ── Wallet ────────────────────────────────────────────────────
-  window.connectWallet = async () => {
-    try {
-      await freighter.setAllowed();
-      const { address } = await freighter.getAddress();
-      window.userAddress = address;
-      document.getElementById("wallet-address").textContent =
-        address.slice(0,6) + "..." + address.slice(-4);
-      document.getElementById("wallet-btn").textContent = "Connected";
-      document.getElementById("wallet-btn").style.background = "#1a7a4a";
-      refreshStats();
-    } catch(e) {
-      alert("Freighter error: " + e.message);
-    }
-  };
+window.userAddress = null;
 
-  // ── Tabs ──────────────────────────────────────────────────────
-  window.switchTab = (tab) => {
-    const names = ["verify","register","recall"];
-    document.querySelectorAll(".tab").forEach((t,i) =>
-      t.classList.toggle("active", names[i] === tab));
-    document.querySelectorAll(".panel").forEach(p =>
-      p.classList.remove("active"));
-    document.getElementById("panel-"+tab).classList.add("active");
-  };
+/* ---------------- WALLET ---------------- */
+window.connectWallet = async function () {
+  try {
+    await freighter.setAllowed();
+    const { address } = await freighter.getAddress();
 
-  // ── Helpers ───────────────────────────────────────────────────
-  function showMsg(id, html, type) {
-    const el = document.getElementById(id);
-    el.className = "msg " + type;
-    el.innerHTML = html;
+    window.userAddress = address;
+
+    document.getElementById("wallet-address").innerText =
+      address.slice(0,6) + "..." + address.slice(-4);
+
+    document.getElementById("wallet-btn").innerText = "Connected";
+  } catch (e) {
+    alert(e.message);
   }
+};
 
-  function requireWallet(msgId) {
-    if (!window.userAddress) {
-      showMsg(msgId, "Connect your Freighter wallet first.", "error");
-      return false;
-    }
-    return true;
+/* ---------------- HELPERS ---------------- */
+function show(id, msg) {
+  document.getElementById(id).innerHTML = msg;
+}
+
+async function sendTx(method, args) {
+  const account = await rpc.getAccount(window.userAddress);
+
+  const tx = new StellarSdk.TransactionBuilder(account, {
+    fee: "100000",
+    networkPassphrase: StellarSdk.Networks.TESTNET,
+  })
+  .addOperation(contract.call(method, ...args))
+  .setTimeout(30)
+  .build();
+
+  const prepared = await rpc.prepareTransaction(tx);
+
+  const signed = await freighter.signTransaction(
+    prepared.toXDR(),
+    { networkPassphrase: StellarSdk.Networks.TESTNET }
+  );
+
+  const txObj = StellarSdk.TransactionBuilder.fromXDR(
+    signed.signedTxXdr,
+    StellarSdk.Networks.TESTNET
+  );
+
+  return await rpc.sendTransaction(txObj);
+}
+
+/* ---------------- REGISTER ---------------- */
+window.registerBatch = async function () {
+  if (!window.userAddress) return alert("Connect wallet first");
+
+  const batchId = batchId.value;
+  const name = document.getElementById("name").value;
+  const mfr = document.getElementById("mfr").value;
+  const exp = document.getElementById("exp").value;
+
+  try {
+    const res = await sendTx("register_batch", [
+      new StellarSdk.Address(window.userAddress).toScVal(),
+      StellarSdk.nativeToScVal(batchId),
+      StellarSdk.nativeToScVal(name),
+      StellarSdk.nativeToScVal(mfr),
+      StellarSdk.nativeToScVal(exp),
+    ]);
+
+    show("register-msg", "✅ Registered! TX: " + res.hash);
+  } catch (e) {
+    show("register-msg", "❌ " + e.message);
   }
+};
 
-  async function buildAndSend(method, args) {
-    const account  = await rpc.getAccount(window.userAddress);
-    const tx = new StellarSdk.TransactionBuilder(account, {
-      fee: "100000",
-      networkPassphrase: StellarSdk.Networks.TESTNET,
-    })
-      .addOperation(contract.call(method, ...args))
-      .setTimeout(30)
-      .build();
+/* ---------------- VERIFY ---------------- */
+window.verifyBatch = async function () {
+  if (!window.userAddress) return alert("Connect wallet first");
 
-    const prepared = await rpc.prepareTransaction(tx);
-    const { signedTxXdr } = await freighter.signTransaction(
-      prepared.toXDR(),
-      { networkPassphrase: StellarSdk.Networks.TESTNET }
-    );
-    const signed = StellarSdk.TransactionBuilder.fromXDR(
-      signedTxXdr, StellarSdk.Networks.TESTNET
-    );
-    return await rpc.sendTransaction(signed);
-  }
+  const id = document.getElementById("verifyId").value;
 
-  async function readContract(method, args = []) {
-    const account = await rpc.getAccount(window.userAddress || CONTRACT_ID);
+  try {
+    const account = await rpc.getAccount(window.userAddress);
+
     const tx = new StellarSdk.TransactionBuilder(account, {
       fee: "100",
       networkPassphrase: StellarSdk.Networks.TESTNET,
     })
-      .addOperation(contract.call(method, ...args))
-      .setTimeout(30)
-      .build();
+    .addOperation(contract.call("verify_batch",
+      StellarSdk.nativeToScVal(id)
+    ))
+    .setTimeout(30)
+    .build();
+
     const sim = await rpc.simulateTransaction(tx);
-    return StellarSdk.scValToNative(sim.result.retval);
+
+    const result = StellarSdk.scValToNative(sim.result.retval);
+
+    show("verify-msg", JSON.stringify(result));
+  } catch (e) {
+    show("verify-msg", "❌ " + e.message);
   }
-
-  // ── Stats ─────────────────────────────────────────────────────
-  async function refreshStats() {
-    try {
-      const count = await readContract("get_batch_count");
-      document.getElementById("batch-count").textContent = count;
-    } catch(e) { console.log("Stats:", e); }
-  }
-
-  // ── Verify ────────────────────────────────────────────────────
-  window.verifyBatch = async () => {
-    const batchId = document.getElementById("verify-batch-id").value.trim();
-    if (!batchId) return;
-
-    const el = document.getElementById("verify-result");
-    el.innerHTML = `<div class="msg info">Checking blockchain...</div>`;
-
-    try {
-      const result = await readContract("verify_batch", [
-        StellarSdk.nativeToScVal(batchId, { type: "string" })
-      ]);
-
-      if (!result) {
-        el.innerHTML = `
-          <div class="result-box fake">
-            <div class="result-icon">🚫</div>
-            <div class="result-status fake">FAKE / NOT REGISTERED</div>
-            <p style="font-size:13px;color:#c0392b;margin-top:6px">
-              This batch ID does not exist on the blockchain.<br>
-              Do not purchase or consume this medicine.
-            </p>
-          </div>`;
-        return;
-      }
-
-      const isRecalled = result.is_recalled;
-      const expiry = new Date(result.expiry_date);
-      const isExpired = expiry < new Date();
-
-      if (isRecalled) {
-        el.innerHTML = `
-          <div class="result-box recalled">
-            <div class="result-icon">⚠️</div>
-            <div class="result-status recalled">RECALLED</div>
-            <p style="font-size:13px;color:#a07800;margin-top:6px">
-              This batch has been recalled by the manufacturer.<br>Do not use.
-            </p>
-            <div class="result-detail">
-              <span><strong>Medicine:</strong> ${result.medicine_name}</span>
-              <span><strong>Manufacturer:</strong> ${result.manufacturer}</span>
-              <span><strong>Batch ID:</strong> ${result.batch_id}</span>
-            </div>
-          </div>`;
-        return;
-      }
-
-      el.innerHTML = `
-        <div class="result-box ${isExpired ? 'recalled' : 'authentic'}">
-          <div class="result-icon">${isExpired ? '⚠️' : '✅'}</div>
-          <div class="result-status ${isExpired ? 'recalled' : 'authentic'}">
-            ${isExpired ? 'AUTHENTIC BUT EXPIRED' : 'AUTHENTIC'}
-          </div>
-          <div class="result-detail">
-            <span><strong>Medicine:</strong> ${result.medicine_name}</span>
-            <span><strong>Manufacturer:</strong> ${result.manufacturer}</span>
-            <span><strong>Batch ID:</strong> ${result.batch_id}</span>
-            <span><strong>Manufactured:</strong> ${result.manufacture_date}</span>
-            <span><strong>Expires:</strong> ${result.expiry_date}</span>
-          </div>
-          <a class="tx-link" href="https://stellar.expert/explorer/testnet/contract/${CONTRACT_ID}" target="_blank">
-            View contract on Stellar Expert →
-          </a>
-        </div>`;
-    } catch(e) {
-      el.innerHTML = `<div class="msg error">Error: ${e.message}</div>`;
-    }
-  };
-
-  // ── Register ──────────────────────────────────────────────────
-  window.registerBatch = async () => {
-    if (!requireWallet("register-msg")) return;
-    const batchId  = document.getElementById("reg-batch-id").value.trim();
-    const name     = document.getElementById("reg-medicine-name").value.trim();
-    const mfr      = document.getElementById("reg-manufacturer").value.trim();
-    const mfrDate  = document.getElementById("reg-manufacture-date").value;
-    const expDate  = document.getElementById("reg-expiry-date").value;
-
-    if (!batchId || !name || !mfr || !mfrDate || !expDate)
-      return showMsg("register-msg", "Fill in all fields.", "error");
-
-    showMsg("register-msg", "Registering on blockchain — sign in Freighter...", "info");
-    try {
-      const result = await buildAndSend("register_batch", [
-        new StellarSdk.Address(window.userAddress).toScVal(),
-        StellarSdk.nativeToScVal(batchId,  { type: "string" }),
-        StellarSdk.nativeToScVal(name,     { type: "string" }),
-        StellarSdk.nativeToScVal(mfr,      { type: "string" }),
-        StellarSdk.nativeToScVal(mfrDate,  { type: "string" }),
-        StellarSdk.nativeToScVal(expDate,  { type: "string" }),
-      ]);
-      showMsg("register-msg",
-        `Batch registered! Share the Batch ID <strong>${batchId}</strong> with pharmacies.<br>
-        <a class="tx-link" href="https://stellar.expert/explorer/testnet/tx/${result.hash}" target="_blank">
-          View transaction on Stellar Expert →
-        </a>`, "success");
-      refreshStats();
-    } catch(e) {
-      showMsg("register-msg", "Error: " + e.message, "error");
-    }
-  };
-
-  // ── Recall ────────────────────────────────────────────────────
-  window.recallBatch = async () => {
-    if (!requireWallet("recall-msg")) return;
-    const batchId = document.getElementById("recall-batch-id").value.trim();
-    if (!batchId) return showMsg("recall-msg", "Enter a batch ID.", "error");
-
-    showMsg("recall-msg", "Issuing recall — sign in Freighter...", "info");
-    try {
-      const result = await buildAndSend("recall_batch", [
-        new StellarSdk.Address(window.userAddress).toScVal(),
-        StellarSdk.nativeToScVal(batchId, { type: "string" }),
-      ]);
-      showMsg("recall-msg",
-        `Recall issued for <strong>${batchId}</strong>. Anyone verifying this batch will now see a warning.<br>
-        <a class="tx-link" href="https://stellar.expert/explorer/testnet/tx/${result.hash}" target="_blank">
-          View transaction →
-        </a>`, "success");
-    } catch(e) {
-      showMsg("recall-msg", "Error: " + e.message, "error");
-    }
-  };
-
-  refreshStats();
+};
 </script>
+
 </body>
 </html>
