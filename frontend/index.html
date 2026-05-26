@@ -50,7 +50,7 @@
   </div>
 
   <div>
-    <button id="wallet-btn" onclick="connectWallet()">Connect Freighter</button>
+    <button id="wallet-btn">Connect Freighter</button>
     <div id="wallet-address">Not connected</div>
   </div>
 </header>
@@ -63,7 +63,9 @@
     <input id="batchId" placeholder="Batch ID"/>
     <input id="name" placeholder="Medicine Name"/>
     <input id="mfr" placeholder="Manufacturer"/>
-    <input id="exp" type="date"/>
+    <input id="manufactureDate" type="date"/>
+    <input id="mfrDate" type="date" placeholder="Manufacture Date"/>
+    <input id="expDate" type="date" placeholder="Expiry Date"/>
 
     <button class="primary" onclick="registerBatch()">Register</button>
     <div id="register-msg"></div>
@@ -91,7 +93,7 @@ const contract = new StellarSdk.Contract(CONTRACT_ID);
 window.userAddress = null;
 
 /* ---------------- WALLET ---------------- */
-window.connectWallet = async function () {
+async function connectWallet() {
   try {
     await freighter.setAllowed();
     const { address } = await freighter.getAddress();
@@ -103,9 +105,13 @@ window.connectWallet = async function () {
 
     document.getElementById("wallet-btn").innerText = "Connected";
   } catch (e) {
-    alert(e.message);
+    alert("Freighter error: " + e.message);
   }
-};
+}
+
+/* attach safely AFTER definition */
+document.getElementById("wallet-btn")
+  .addEventListener("click", connectWallet);
 
 /* ---------------- HELPERS ---------------- */
 function show(id, msg) {
@@ -145,16 +151,18 @@ window.registerBatch = async function () {
   const batchId = document.getElementById("batchId").value;
   const name = document.getElementById("name").value;
   const mfr = document.getElementById("mfr").value;
-  const exp = document.getElementById("exp").value;
+  const manufactureDate = document.getElementById("manufactureDate").value;
+  const mfrDate = document.getElementById("mfrDate").value;
+const expDate = document.getElementById("expDate").value;
 
   try {
     const res = await sendTx("register_batch", [
-      new StellarSdk.Address(window.userAddress).toScVal(),
-      StellarSdk.nativeToScVal(batchId),
-      StellarSdk.nativeToScVal(name),
-      StellarSdk.nativeToScVal(mfr),
-      StellarSdk.nativeToScVal(exp),
-      StellarSdk.nativeToScVal(exp) // (matches your Rust signature requirement fix)
+        StellarSdk.Address(window.userAddress).toScVal(),
+        StellarSdk.nativeToScVal(batchId),
+        StellarSdk.nativeToScVal(name),
+        StellarSdk.nativeToScVal(mfr),
+        StellarSdk.nativeToScVal(mfrDate),
+        StellarSdk.nativeToScVal(expDate)
     ]);
 
     show("register-msg", "✅ Registered! TX: " + res.hash);
