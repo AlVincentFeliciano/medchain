@@ -24,6 +24,7 @@
     main{max-width:700px;margin:2rem auto;padding:0 1rem}
 
     .card{background:white;padding:1.5rem;border-radius:12px;margin-bottom:1rem}
+
     input{
       width:100%;padding:10px;border:1px solid #ddd;
       border-radius:8px;margin-top:5px
@@ -35,12 +36,6 @@
       background:#1a1a2e;color:white;font-weight:600;
       cursor:pointer;
     }
-
-    .tab{cursor:pointer;padding:8px 12px;border:1px solid #ddd;border-radius:8px}
-    .tab.active{background:#1a1a2e;color:white}
-
-    .panel{display:none}
-    .panel.active{display:block}
 
     .msg{margin-top:10px;font-size:13px}
   </style>
@@ -64,18 +59,22 @@
 
   <div class="card">
     <h3>Register Batch</h3>
+
     <input id="batchId" placeholder="Batch ID"/>
     <input id="name" placeholder="Medicine Name"/>
     <input id="mfr" placeholder="Manufacturer"/>
     <input id="exp" type="date"/>
+
     <button class="primary" onclick="registerBatch()">Register</button>
     <div id="register-msg"></div>
   </div>
 
   <div class="card">
     <h3>Verify Batch</h3>
+
     <input id="verifyId" placeholder="Batch ID"/>
     <button class="primary" onclick="verifyBatch()">Verify</button>
+
     <div id="verify-msg"></div>
   </div>
 
@@ -85,7 +84,7 @@
 import * as StellarSdk from "https://esm.sh/@stellar/stellar-sdk@13.0.0";
 import freighter from "https://esm.sh/@stellar/freighter-api@2.0.0";
 
-const CONTRACT_ID = "CDPLCHQWKFAKQGQNWRNXIPEXONA6EBMJSWS3TRILXHZ6IS5BNLO2M5HJ";
+const CONTRACT_ID = "CBXFPI27YZ6SRTTZABR2OZWJ6Z2HWFU7O3XAQOJYS3VVLONFHBZP3V3O";
 const rpc = new StellarSdk.SorobanRpc.Server("https://soroban-testnet.stellar.org");
 const contract = new StellarSdk.Contract(CONTRACT_ID);
 
@@ -143,7 +142,7 @@ async function sendTx(method, args) {
 window.registerBatch = async function () {
   if (!window.userAddress) return alert("Connect wallet first");
 
-  const batchId = batchId.value;
+  const batchId = document.getElementById("batchId").value;
   const name = document.getElementById("name").value;
   const mfr = document.getElementById("mfr").value;
   const exp = document.getElementById("exp").value;
@@ -155,6 +154,7 @@ window.registerBatch = async function () {
       StellarSdk.nativeToScVal(name),
       StellarSdk.nativeToScVal(mfr),
       StellarSdk.nativeToScVal(exp),
+      StellarSdk.nativeToScVal(exp) // (matches your Rust signature requirement fix)
     ]);
 
     show("register-msg", "✅ Registered! TX: " + res.hash);
@@ -176,7 +176,8 @@ window.verifyBatch = async function () {
       fee: "100",
       networkPassphrase: StellarSdk.Networks.TESTNET,
     })
-    .addOperation(contract.call("verify_batch",
+    .addOperation(contract.call(
+      "verify_batch",
       StellarSdk.nativeToScVal(id)
     ))
     .setTimeout(30)
@@ -186,11 +187,12 @@ window.verifyBatch = async function () {
 
     const result = StellarSdk.scValToNative(sim.result.retval);
 
-    show("verify-msg", JSON.stringify(result));
+    show("verify-msg", JSON.stringify(result, null, 2));
   } catch (e) {
     show("verify-msg", "❌ " + e.message);
   }
 };
+
 </script>
 
 </body>

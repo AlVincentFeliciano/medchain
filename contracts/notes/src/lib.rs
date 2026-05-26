@@ -18,11 +18,9 @@ pub struct MedicineBatch {
 }
 
 #[contracttype]
-#[derive(Clone)]
 pub enum DataKey {
     Batch(String),
     BatchCount,
-    Manufacturer(Address),
 }
 
 #[contract]
@@ -31,7 +29,7 @@ pub struct MedChain;
 #[contractimpl]
 impl MedChain {
 
-    // Register a new medicine batch
+    // REGISTER BATCH (Freighter signs this)
     pub fn register_batch(
         env: Env,
         registrar: Address,
@@ -42,37 +40,32 @@ impl MedChain {
         expiry_date: String,
     ) -> bool {
 
+        // ONLY ONE AUTH CHECK (correct)
         registrar.require_auth();
 
-        // Check if batch already exists
-        let exists = env
-            .storage()
-            .instance()
+        // prevent overwrite
+        if env.storage().instance()
             .get::<DataKey, MedicineBatch>(&DataKey::Batch(batch_id.clone()))
-            .is_some();
-
-        if exists {
+            .is_some()
+        {
             return false;
         }
 
         let batch = MedicineBatch {
             batch_id: batch_id.clone(),
-            medicine_name: medicine_name.clone(),
-            manufacturer: manufacturer.clone(),
+            medicine_name,
+            manufacturer,
             manufacture_date,
             expiry_date,
             registered_by: registrar.clone(),
             is_recalled: false,
         };
 
-        env.storage()
-            .instance()
-            .set(&DataKey::Batch(batch_id.clone()), &batch);
+        env.storage().instance().set(&DataKey::Batch(batch_id.clone()), &batch);
 
-        let count: u32 = env
-            .storage()
+        let count: u32 = env.storage()
             .instance()
-            .get::<DataKey, u32>(&DataKey::BatchCount)
+            .get(&DataKey::BatchCount)
             .unwrap_or(0);
 
         env.storage()
@@ -81,13 +74,13 @@ impl MedChain {
 
         env.events().publish(
             (symbol_short!("REGISTER"), registrar),
-            (batch_id, medicine_name, manufacturer),
+            batch_id,
         );
 
         true
     }
 
-    // Verify medicine batch
+    // VERIFY
     pub fn verify_batch(
         env: Env,
         batch_id: String,
@@ -95,10 +88,10 @@ impl MedChain {
 
         env.storage()
             .instance()
-            .get::<DataKey, MedicineBatch>(&DataKey::Batch(batch_id))
+            .get(&DataKey::Batch(batch_id))
     }
 
-    // Recall a medicine batch
+    // RECALL
     pub fn recall_batch(
         env: Env,
         registrar: Address,
@@ -107,41 +100,36 @@ impl MedChain {
 
         registrar.require_auth();
 
-        let batch_opt = env
-            .storage()
+        let mut batch = match env.storage()
             .instance()
-            .get::<DataKey, MedicineBatch>(&DataKey::Batch(batch_id.clone()));
+            .get::<DataKey, MedicineBatch>(&DataKey::Batch(batch_id.clone()))
+        {
+            None => return false,
+            Some(b) => b,
+        };
 
-        match batch_opt {
-            None => false,
-
-            Some(mut batch) => {
-                if batch.registered_by != registrar {
-                    return false;
-                }
-
-                batch.is_recalled = true;
-
-                env.storage()
-                    .instance()
-                    .set(&DataKey::Batch(batch_id.clone()), &batch);
-
-                env.events().publish(
-                    (symbol_short!("RECALL"), registrar),
-                    batch_id,
-                );
-
-                true
-            }
+        if batch.registered_by != registrar {
+            return false;
         }
-    }
 
-    // Get total batches
-    pub fn get_batch_count(env: Env) -> u32 {
+        batch.is_recalled = true;
 
         env.storage()
             .instance()
-            .get::<DataKey, u32>(&DataKey::BatchCount)
+            .set(&DataKey::Batch(batch_id.clone()), &batch);
+
+        env.events().publish(
+            (symbol_short!("RECALL"), registrar),
+            batch_id,
+        );
+
+        true
+    }
+
+    pub fn get_batch_count(env: Env) -> u32 {
+        env.storage()
+            .instance()
+            .get(&DataKey::BatchCount)
             .unwrap_or(0)
     }
 }
